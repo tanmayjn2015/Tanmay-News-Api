@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TANMAY NEWS API</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#0f172a,#312e81,#0e7490);color:#fff;min-height:100vh}
+main{max-width:1050px;margin:auto;padding:24px}.hero,.box{background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:20px;margin:14px 0;box-shadow:0 10px 35px rgba(0,0,0,.18)}
+h1{margin:0 0 6px;font-size:34px}.muted{opacity:.8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+input,select,button{width:100%;padding:13px;border:0;border-radius:12px;font:inherit}input,select{background:#fff;color:#111}button{background:linear-gradient(90deg,#f59e0b,#ec4899);color:#fff;font-weight:800;cursor:pointer}
+article{background:rgba(255,255,255,.96);color:#111;border-radius:16px;padding:15px;margin:12px 0}article h3{margin:0 0 8px}article a{color:#4f46e5;font-weight:700}
+</style></head><body><main>
+<section class="hero"><h1>🚀 TANMAY NEWS API</h1><div class="muted">Real-time worldwide news • Search by country, category, language or PIN</div></section>
+<section class="box"><div class="grid">
+<input id="q" placeholder="🔎 Search news">
+<input id="pin" placeholder="📍 PIN / Pincode">
+<select id="c"><option value="">🌍 Worldwide</option><option value="in">🇮🇳 India</option><option value="us">🇺🇸 USA</option><option value="gb">🇬🇧 UK</option><option value="jp">🇯🇵 Japan</option><option value="au">🇦🇺 Australia</option><option value="ca">🇨🇦 Canada</option></select>
+<select id="cat"><option value="">📰 All categories</option><option>technology</option><option>business</option><option>sports</option><option>science</option><option>health</option><option>entertainment</option></select>
+<select id="lang"><option value="">All languages</option><option value="en">English</option><option value="hi">Hindi</option></select>
+<button onclick="load()">✨ Get News</button></div></section>
+<section id="out" class="box">Loading...</section></main>
+<script>
+const e=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+async function load(){
+ const p=new URLSearchParams(), vals={q:q.value.trim(),pin:pin.value.trim(),country:c.value,category:cat.value,language:lang.value};
+ for(const [k,v] of Object.entries(vals))if(v)p.set(k,v);
+ out.innerHTML='⏳ Loading real-time news…';
+ try{const r=await fetch('/news?'+p,{cache:'no-store'}),d=await r.json();
+ if(!r.ok||d.status==='error'){out.innerHTML='<pre>'+e(JSON.stringify(d,null,2))+'</pre>';return}
+ out.innerHTML=(d.articles||[]).map(a=>`<article><h3>${e(a.title||'Untitled')}</h3><p>${e(a.description||'')}</p><small>${e(a.pubDate||'')}</small>${a.link?`<br><a target="_blank" rel="noopener" href="${e(a.link)}">Read source →</a>`:''}</article>`).join('')||'<h3>No news found.</h3>';
+ }catch(err){out.textContent='❌ Request failed: '+err.message}
+}
+load();
+</script></body></html>
